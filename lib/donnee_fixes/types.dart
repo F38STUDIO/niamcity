@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:niamcity/models/type.dart';
 
 // Cette liste contient toutes les differentes categories d'Elementes disponibles sur l'application (clinique, maternite, etc...)

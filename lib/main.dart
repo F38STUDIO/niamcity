@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'donnee_fixes/couleurs.dart';
 import 'screens/main_page.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'niamcity',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Couleurs.d),
         useMaterial3: true,
       ),
       home: const MainPage(),
