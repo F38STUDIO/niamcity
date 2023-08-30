@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../donnee_fixes/couleurs.dart';
 import '../models/element.dart';
-import '../utils/element_card.dart';
+import '../widgets/element_card.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
