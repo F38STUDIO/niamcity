@@ -1,8 +1,9 @@
-class Element {
+class MonElement {
   String id;
   String nom;
   List<String> imgs;
   String description;
+  String type;
   int latitude;
   int longitude;
   bool certifie;
@@ -10,11 +11,12 @@ class Element {
   int? contact;
   int? quantite;
 
-  Element({
+  MonElement({
     required this.id,
     required this.nom,
     required this.imgs,
     required this.description,
+    required this.type,
     required this.latitude,
     required this.longitude,
     required this.certifie,
