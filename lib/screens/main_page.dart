@@ -47,7 +47,7 @@ class _ProvidedStylesExampleState extends State<ProvidedStylesExample> {
 
   List<Widget> _buildScreens() => [
         const HomePage(),
-        const MapSample(),
+        const LocationPage(),
         const SearchPage(),
         const ProfilePage(),
       ];
