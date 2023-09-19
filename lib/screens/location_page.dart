@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import '../donnee_fixes/categories.dart';
 import '../donnee_fixes/constantes.dart';
 import '../donnee_fixes/couleurs.dart';
