@@ -1,11 +1,13 @@
+import 'type.dart';
+
 class MonElement {
   String id;
   String nom;
   List<String> imgs;
   String description;
-  String type;
-  int latitude;
-  int longitude;
+  LeType type;
+  double latitude;
+  double longitude;
   bool certifie;
   String? prix;
   int? contact;

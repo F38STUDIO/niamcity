@@ -44,7 +44,7 @@ List<LeType> typesEducation = [
   ),
   LeType(
     id: "008",
-    nom: " ECOLES PRIVES",
+    nom: " Ecoles privées",
     categorie: "002",
   ),
   LeType(

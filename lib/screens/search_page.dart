@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../donnee_fixes/categories.dart';
 import '../donnee_fixes/couleurs.dart';
 import '../models/element.dart';
 import '../widgets/element_card.dart';
@@ -18,7 +19,7 @@ class _SearchPageState extends State<SearchPage> {
       nom: "Université sani kalla idi ali babbattio",
       imgs: ["", "", ""],
       description: "Une Univesité à Maradi",
-      type: "type",
+      type: categories[1].types[1],
       latitude: 00,
       longitude: 00,
       certifie: false,
@@ -28,7 +29,7 @@ class _SearchPageState extends State<SearchPage> {
       nom: "Université sani",
       imgs: ["", "", ""],
       description: "Une Univesité à Maradi",
-      type: "type",
+      type: categories[1].types[1],
       latitude: 00,
       longitude: 00,
       certifie: false,
@@ -38,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
       nom: "Université Aboubacar",
       imgs: ["", "", ""],
       description: "Une Univesité à Maradi",
-      type: "type",
+      type: categories[1].types[1],
       latitude: 00,
       longitude: 00,
       certifie: false,
@@ -48,7 +49,7 @@ class _SearchPageState extends State<SearchPage> {
       nom: "Université  idi",
       imgs: ["", "", ""],
       description: "Une Univesité à Maradi",
-      type: "type",
+      type: categories[1].types[1],
       latitude: 00,
       longitude: 00,
       certifie: false,
@@ -58,7 +59,7 @@ class _SearchPageState extends State<SearchPage> {
       nom: "Université fada 20",
       imgs: ["", "", ""],
       description: "Une Univesité à Maradi",
-      type: "type",
+      type: categories[1].types[1],
       latitude: 00,
       longitude: 00,
       certifie: false,
@@ -68,7 +69,7 @@ class _SearchPageState extends State<SearchPage> {
       nom: "Université sani kalla idi",
       imgs: ["", "", ""],
       description: "Une Univesité à Maradi",
-      type: "type",
+      type: categories[1].types[1],
       latitude: 00,
       longitude: 00,
       certifie: false,

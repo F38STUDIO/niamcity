@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../donnee_fixes/categories.dart';
+import '../donnee_fixes/constantes.dart';
 import '../donnee_fixes/couleurs.dart';
 import '../models/categorie.dart';
+import '../models/element.dart';
 import '../models/type.dart';
 
 class LocationPage extends StatefulWidget {
@@ -16,8 +18,12 @@ class LocationPage extends StatefulWidget {
 }
 
 class LocationPageState extends State<LocationPage> {
+  //////////////////////////////////////////////////////////////////////////////////////
+  //Choix de categorie et type
   Categorie categorieSelectionnee = categories[0];
   LeType typeSelectionne = categories[0].types[0];
+
+  //Choix de Maptype
   MapType _mapTypeSelectionne = MapType.normal;
   List<Map<String, MapType>> mapTypeList = [
     {"Normale": MapType.normal},
@@ -26,23 +32,26 @@ class LocationPageState extends State<LocationPage> {
     {"terrain": MapType.terrain},
   ];
   //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
-  List<Element> _elementsAffiche = [];
+  final List<MonElement> _elementsAffiches = elements01;
+
+  //
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
   static const CameraPosition _positionInitiale = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(14.724739075233233, 5.8836808749999925),
     zoom: 14.4746,
   );
 
   static const CameraPosition _origin = CameraPosition(
       bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
+      target: LatLng(17.6110005, 8.080946499999982),
       tilt: 59.440717697143555,
       zoom: 19.151926040649414);
-
+  //////////////////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
+    ////////////////////////////////////////////////////////////////////////////
     TextStyle? dropdownStyle = const TextStyle(
         color: Couleurs.b,
         overflow: TextOverflow.ellipsis,
@@ -59,6 +68,8 @@ class LocationPageState extends State<LocationPage> {
               color: Couleurs.b, //shadow for button
               blurRadius: 5) //blur radius of shadow
         ]);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 60),
       child: Scaffold(
@@ -107,9 +118,7 @@ class LocationPageState extends State<LocationPage> {
         ),
         body: Stack(
           children: [
-            //
-
-            //
+            //La carte
             GoogleMap(
               zoomControlsEnabled: false,
               mapType: _mapTypeSelectionne,
@@ -117,69 +126,80 @@ class LocationPageState extends State<LocationPage> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
+              markers: _elementsAffiches
+                  .map((e) => Marker(
+                        markerId: MarkerId(e.id),
+                        infoWindow: InfoWindow(title: e.nom),
+                        position: LatLng(e.latitude, e.longitude),
+                      ))
+                  .toSet(),
             ),
+            //les 2 dropdowns
             Padding(
-              padding: const EdgeInsets.fromLTRB(70, 0, 1, 0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  DecoratedBox(
-                    decoration: dropdownDecoration,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: DropdownButton(
-                          alignment: AlignmentDirectional.center,
-                          borderRadius: BorderRadius.circular(30),
-                          underline: Container(),
-                          dropdownColor: Couleurs.d,
-                          style: dropdownStyle,
-                          value: categorieSelectionnee,
-                          items: categories
-                              .map((e) => DropdownMenuItem<Categorie>(
-                                  value: e,
-                                  child: Text(
-                                    textAlign: TextAlign.center,
-                                    e.nom,
-                                    overflow: TextOverflow.ellipsis,
-                                  )))
-                              .toList(),
-                          onChanged: (Categorie? newValue) => setState(() {
-                                categorieSelectionnee = newValue!;
-                                typeSelectionne = newValue.types[0];
-                              })),
+              padding: const EdgeInsets.fromLTRB(50, 8, 1, 0),
+              child: Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    DecoratedBox(
+                      decoration: dropdownDecoration,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: DropdownButton(
+                            alignment: AlignmentDirectional.center,
+                            borderRadius: BorderRadius.circular(30),
+                            underline: Container(),
+                            dropdownColor: Couleurs.d,
+                            style: dropdownStyle,
+                            value: categorieSelectionnee,
+                            items: categories
+                                .map((e) => DropdownMenuItem<Categorie>(
+                                    value: e,
+                                    child: Text(
+                                      textAlign: TextAlign.center,
+                                      e.nom,
+                                      overflow: TextOverflow.ellipsis,
+                                    )))
+                                .toList(),
+                            onChanged: (Categorie? newValue) => setState(() {
+                                  categorieSelectionnee = newValue!;
+                                  typeSelectionne = newValue.types[0];
+                                })),
+                      ),
                     ),
-                  ),
-                  DecoratedBox(
-                    decoration: dropdownDecoration,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: DropdownButton(
-                          alignment: AlignmentDirectional.center,
-                          borderRadius: BorderRadius.circular(30),
-                          underline: Container(),
-                          dropdownColor: Couleurs.d,
-                          style: dropdownStyle,
-                          value: typeSelectionne,
-                          items: categorieSelectionnee.types
-                              .map((e) => DropdownMenuItem<LeType>(
-                                  value: e,
-                                  child: Text(
-                                    e.nom,
-                                    overflow: TextOverflow.ellipsis,
-                                  )))
-                              .toList(),
-                          onChanged: (LeType? newValue) => setState(() {
-                                typeSelectionne = newValue!;
-                              })),
+                    DecoratedBox(
+                      decoration: dropdownDecoration,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: DropdownButton(
+                            alignment: AlignmentDirectional.center,
+                            borderRadius: BorderRadius.circular(30),
+                            underline: Container(),
+                            dropdownColor: Couleurs.d,
+                            style: dropdownStyle,
+                            value: typeSelectionne,
+                            items: categorieSelectionnee.types
+                                .map((e) => DropdownMenuItem<LeType>(
+                                    value: e,
+                                    child: Text(
+                                      e.nom,
+                                      overflow: TextOverflow.ellipsis,
+                                    )))
+                                .toList(),
+                            onChanged: (LeType? newValue) => setState(() {
+                                  typeSelectionne = newValue!;
+                                })),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
         ),
+        //Le boutton Ma position
         floatingActionButton: FloatingActionButton(
           backgroundColor: Couleurs.d,
           foregroundColor: Couleurs.a,
