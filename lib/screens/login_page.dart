@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:niamcity/screens/registration_page.dart';
-
 import '../donnee_fixes/couleurs.dart';
 
 class LoginPage extends StatelessWidget {
@@ -90,6 +89,5 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

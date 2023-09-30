@@ -24,7 +24,7 @@ class LocationPageState extends State<LocationPage> {
     {"terrain": MapType.terrain},
   ];
   //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
-  List<Element> _elementsAffiche = [];
+  //List<Element> _elementgsAffiche = [];
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
