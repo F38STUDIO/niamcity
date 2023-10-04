@@ -1,3 +1,5 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'type.dart';
 
 class MonElement {
@@ -12,7 +14,7 @@ class MonElement {
   String? prix;
   int? contact;
   int? quantite;
-
+  LatLng localisation() => LatLng(latitude, longitude);
   MonElement({
     required this.id,
     required this.nom,

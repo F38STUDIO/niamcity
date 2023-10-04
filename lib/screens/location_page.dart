@@ -1,6 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../donnee_fixes/categories.dart';
 import '../donnee_fixes/constantes.dart';
 import '../donnee_fixes/couleurs.dart';
@@ -16,7 +19,7 @@ class LocationPage extends StatefulWidget {
 }
 
 class LocationPageState extends State<LocationPage> {
-  //////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////VARIABLES ET FONCTIONS(STATES)//////////////////////////////////////////////////////////
   //Choix de categorie et type
   Categorie categorieSelectionnee = categories[0];
   LeType typeSelectionne = categories[0].types[0];
@@ -29,6 +32,8 @@ class LocationPageState extends State<LocationPage> {
     {"satellite": MapType.satellite},
     {"terrain": MapType.terrain},
   ];
+  //Element selectionné
+  MonElement? _elementSelectionne;
   //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
   final List<MonElement> _elementsAffiches = elements01;
 
@@ -36,20 +41,41 @@ class LocationPageState extends State<LocationPage> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
-  static const CameraPosition _positionInitiale = CameraPosition(
-    target: LatLng(14.724739075233233, 5.8836808749999925),
-    zoom: 14.4746,
-  );
+//origine et destination
+  static const LatLng _origin = LatLng(17.6110005, 8.080946499999982);
+  static const LatLng destination =
+      LatLng(14.328933086126652, 8.322645718749992);
 
-  static const CameraPosition _origin = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(17.6110005, 8.080946499999982),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  // LatLng? destination;
+
+//PolylineCoordinates
+  List<LatLng> polylineCoordinates = [];
+//Fonction pour les polyLinesPoints
+  void getPolyPoints() async {
+    PolylinePoints polyLinePoints = PolylinePoints();
+    PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
+        "AIzaSyBoNlwTrZ78AQF1FZnF1YLygeGpFHWJAhM",
+        PointLatLng(_origin.latitude, _origin.longitude),
+        PointLatLng(destination!.latitude, destination!.longitude));
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) =>
+          polylineCoordinates.add(LatLng(point.latitude, point.longitude)));
+      setState(() {});
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////
+  ///
+  @override
+  void initState() {
+    getPolyPoints();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    ////////////////////////////////////////////////////////////////////////////
+    ///////////////////////VARIABLES DANS BUILDcONTEXT/////////////////////////////////////////////////////
+
     TextStyle? dropdownStyle = const TextStyle(
         color: Couleurs.b,
         overflow: TextOverflow.ellipsis,
@@ -120,17 +146,35 @@ class LocationPageState extends State<LocationPage> {
             GoogleMap(
               zoomControlsEnabled: false,
               mapType: _mapTypeSelectionne,
-              initialCameraPosition: _positionInitiale,
+              initialCameraPosition: const CameraPosition(
+                target: _origin,
+                zoom: 14.4746,
+              ),
+              polylines: {
+                Polyline(
+                  polylineId: const PolylineId("route"),
+                  points: polylineCoordinates,
+                  color: Couleurs.c,
+                  width: 5,
+                )
+              },
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
-              markers: _elementsAffiches
-                  .map((e) => Marker(
-                        markerId: MarkerId(e.id),
-                        infoWindow: InfoWindow(title: e.nom),
-                        position: LatLng(e.latitude, e.longitude),
-                      ))
-                  .toSet(),
+              // markers: _elementsAffiches
+              //     .map((e) => Marker(
+              //           onTap: () {
+              //             setState(() {
+              //               //
+              //               _elementSelectionne = e;
+              //               destination = e.localisation();
+              //             });
+              //           },
+              //           markerId: MarkerId(e.id),
+              //           infoWindow: InfoWindow(title: e.nom),
+              //           position: LatLng(e.latitude, e.longitude),
+              //         ))
+              //     .toSet(),
             ),
             //les 2 dropdowns
             Padding(
@@ -210,6 +254,11 @@ class LocationPageState extends State<LocationPage> {
 
   Future<void> _goToOrigin() async {
     final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_origin));
+    await controller.animateCamera(CameraUpdate.newCameraPosition(
+        const CameraPosition(
+            bearing: 192.8334901395799,
+            target: _origin,
+            tilt: 59.440717697143555,
+            zoom: 19.151926040649414)));
   }
 }
