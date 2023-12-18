@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 import '../donnee_fixes/categories.dart';
 import '../donnee_fixes/constantes.dart';
 import '../donnee_fixes/couleurs.dart';
+import '../map/directions_model.dart';
 import '../models/categorie.dart';
 import '../models/element.dart';
 import '../models/type.dart';
@@ -32,50 +33,86 @@ class LocationPageState extends State<LocationPage> {
     {"satellite": MapType.satellite},
     {"terrain": MapType.terrain},
   ];
-  //Element selectionné
-  MonElement? _elementSelectionne;
   //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
-  final List<MonElement> _elementsAffiches = elements01;
-
-  //
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  List<MonElement> _elementsAffiches = elements01;
+  //Element selectionné
+  MonElement? elementSelectionne;
 
 //origine et destination
-  static const LatLng _origin = LatLng(17.6110005, 8.080946499999982);
-  static const LatLng destination =
-      LatLng(14.328933086126652, 8.322645718749992);
+  LatLng? origin;
+  LatLng? destination;
+  // static  LatLng destination =
+  //     LatLng(16.429177284601234, 8.322645718749992);
 
   // LatLng? destination;
+  //
+  GoogleMapController? _googleMapController;
+  Directions? _info;
 
-//PolylineCoordinates
-  List<LatLng> polylineCoordinates = [];
 //Fonction pour les polyLinesPoints
-  void getPolyPoints() async {
-    PolylinePoints polyLinePoints = PolylinePoints();
-    PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
-        "AIzaSyBoNlwTrZ78AQF1FZnF1YLygeGpFHWJAhM",
-        PointLatLng(_origin.latitude, _origin.longitude),
-        PointLatLng(destination!.latitude, destination!.longitude));
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) =>
-          polylineCoordinates.add(LatLng(point.latitude, point.longitude)));
+  // void getPolyPoints() async {
+  //   PolylinePoints polyLinePoints = PolylinePoints();
+  //   PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
+  //       "AIzaSyBoNlwTrZ78AQF1FZnF1YLygeGpFHWJAhM",
+  //       PointLatLng(origin.latitude, origin.longitude),
+  //       PointLatLng(destination!.latitude, destination!.longitude));
+  //   if (result.points.isNotEmpty) {
+  //     for (var element in result.points) {
+  //       polylineCoordinates.add(LatLng(element.latitude, element.longitude));
+  //     }
+
+  //     setState(() {});
+  //   }
+  // }
+
+  // Corrent Location of the user
+  LocationData? currentLocation;
+  void getCurrentLocation() async {
+    Location location = Location();
+
+    location.getLocation().then((value) {
+      origin = LatLng(value.latitude!, value.longitude!);
+      return currentLocation = value;
+    });
+    GoogleMapController googleMapController = _googleMapController!;
+    location.onLocationChanged.listen((newLoc) {
+      currentLocation = newLoc;
+      googleMapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+              zoom: 13.5,
+              target: LatLng(newLoc.latitude!, newLoc.longitude!))));
       setState(() {});
-    }
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
   ///
   @override
   void initState() {
-    getPolyPoints();
+    getCurrentLocation();
+    //getPolyPoints();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _googleMapController?.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     ///////////////////////VARIABLES DANS BUILDcONTEXT/////////////////////////////////////////////////////
-
+// Element selectionné
+    MonElement _elementSelectionne = _elementsAffiches[0];
+    //origne et destination
+    const LatLng origin = LatLng(17.6110005, 8.080946499999982);
+    LatLng destination =
+        LatLng(_elementSelectionne.latitude, _elementSelectionne.longitude);
+    //PolylineCoordinates
+    List<LatLng> polylineCoordinates = [];
+    //...
     TextStyle? dropdownStyle = const TextStyle(
         color: Couleurs.b,
         overflow: TextOverflow.ellipsis,
@@ -92,6 +129,13 @@ class LocationPageState extends State<LocationPage> {
               color: Couleurs.b, //shadow for button
               blurRadius: 5) //blur radius of shadow
         ]);
+    // Créez un ensemble vide de marqueurs en dehors de la méthode map
+    Set<Marker> markers = {};
+
+// Utilisez la méthode map pour créer les marqueurs et ajoutez-les à l'ensemble
+    markers = {
+      const Marker(markerId: MarkerId("origin"), position: origin, flat: true, colo)
+    };
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     return Padding(
@@ -109,7 +153,7 @@ class LocationPageState extends State<LocationPage> {
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),
-            ),
+         ouù!g_*ùpj'"ezq'a"   ),
           ),
           //Dropdown pour selectionner le type de map
           actions: [
@@ -140,107 +184,103 @@ class LocationPageState extends State<LocationPage> {
             )
           ],
         ),
-        body: Stack(
-          children: [
-            //La carte
-            GoogleMap(
-              zoomControlsEnabled: false,
-              mapType: _mapTypeSelectionne,
-              initialCameraPosition: const CameraPosition(
-                target: _origin,
-                zoom: 14.4746,
-              ),
-              polylines: {
-                Polyline(
-                  polylineId: const PolylineId("route"),
-                  points: polylineCoordinates,
-                  color: Couleurs.c,
-                  width: 5,
-                )
-              },
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
-              // markers: _elementsAffiches
-              //     .map((e) => Marker(
-              //           onTap: () {
-              //             setState(() {
-              //               //
-              //               _elementSelectionne = e;
-              //               destination = e.localisation();
-              //             });
-              //           },
-              //           markerId: MarkerId(e.id),
-              //           infoWindow: InfoWindow(title: e.nom),
-              //           position: LatLng(e.latitude, e.longitude),
-              //         ))
-              //     .toSet(),
-            ),
-            //les 2 dropdowns
-            Padding(
-              padding: const EdgeInsets.fromLTRB(50, 8, 1, 0),
-              child: Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    DecoratedBox(
-                      decoration: dropdownDecoration,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: DropdownButton(
-                            alignment: AlignmentDirectional.center,
-                            borderRadius: BorderRadius.circular(30),
-                            underline: Container(),
-                            dropdownColor: Couleurs.d,
-                            style: dropdownStyle,
-                            value: categorieSelectionnee,
-                            items: categories
-                                .map((e) => DropdownMenuItem<Categorie>(
-                                    value: e,
-                                    child: Text(
-                                      textAlign: TextAlign.center,
-                                      e.nom,
-                                      overflow: TextOverflow.ellipsis,
-                                    )))
-                                .toList(),
-                            onChanged: (Categorie? newValue) => setState(() {
-                                  categorieSelectionnee = newValue!;
-                                  typeSelectionne = newValue.types[0];
-                                })),
+        body: currentLocation == null
+            ? const Center(
+                child: Text("Chargement de votre position..."),
+              )
+            : Stack(
+                children: [
+                  //La carte
+                  GoogleMap(
+                    zoomControlsEnabled: false,
+                    mapType: _mapTypeSelectionne,
+                    initialCameraPosition: const CameraPosition(
+                      target: origin,
+                      zoom: 14.4746,
+                    ),
+                    polylines: {
+                      if (_info != null)
+                        Polyline(
+                          polylineId: const PolylineId("overview_polyline"),
+                          points: polylineCoordinates,
+                          // points: _info!.polylinePoints
+                          //     .map((e) => LatLng(e.latitude, e.longitude))
+                          //     .toList(),
+                          // color: Couleurs.b,
+                          // width: 5,
+                        )
+                    },
+                    onMapCreated: (GoogleMapController controller) {
+                      _googleMapController = controller;
+                    },
+                    markers: markers,
+                  ),
+                  //les 2 dropdowns
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(50, 8, 1, 0),
+                    child: Expanded(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          DecoratedBox(
+                            decoration: dropdownDecoration,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                              child: DropdownButton(
+                                  alignment: AlignmentDirectional.center,
+                                  borderRadius: BorderRadius.circular(30),
+                                  underline: Container(),
+                                  dropdownColor: Couleurs.d,
+                                  style: dropdownStyle,
+                                  value: categorieSelectionnee,
+                                  items: categories
+                                      .map((e) => DropdownMenuItem<Categorie>(
+                                          value: e,
+                                          child: Text(
+                                            textAlign: TextAlign.center,
+                                            e.nom,
+                                            overflow: TextOverflow.ellipsis,
+                                          )))
+                                      .toList(),
+                                  onChanged: (Categorie? newValue) =>
+                                      setState(() {
+                                        categorieSelectionnee = newValue!;
+                                        typeSelectionne = newValue.types[0];
+                                      })),
+                            ),
+                          ),
+                          DecoratedBox(
+                            decoration: dropdownDecoration,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                              child: DropdownButton(
+                                  alignment: AlignmentDirectional.center,
+                                  borderRadius: BorderRadius.circular(30),
+                                  underline: Container(),
+                                  dropdownColor: Couleurs.d,
+                                  style: dropdownStyle,
+                                  value: typeSelectionne,
+                                  items: categorieSelectionnee.types
+                                      .map((e) => DropdownMenuItem<LeType>(
+                                          value: e,
+                                          child: Text(
+                                            e.nom,
+                                            overflow: TextOverflow.ellipsis,
+                                          )))
+                                      .toList(),
+                                  onChanged: (LeType? newValue) => setState(() {
+                                        typeSelectionne = newValue!;
+                                      })),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    DecoratedBox(
-                      decoration: dropdownDecoration,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: DropdownButton(
-                            alignment: AlignmentDirectional.center,
-                            borderRadius: BorderRadius.circular(30),
-                            underline: Container(),
-                            dropdownColor: Couleurs.d,
-                            style: dropdownStyle,
-                            value: typeSelectionne,
-                            items: categorieSelectionnee.types
-                                .map((e) => DropdownMenuItem<LeType>(
-                                    value: e,
-                                    child: Text(
-                                      e.nom,
-                                      overflow: TextOverflow.ellipsis,
-                                    )))
-                                .toList(),
-                            onChanged: (LeType? newValue) => setState(() {
-                                  typeSelectionne = newValue!;
-                                })),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
         //Le boutton Ma position
         floatingActionButton: FloatingActionButton(
           backgroundColor: Couleurs.d,
@@ -253,12 +293,12 @@ class LocationPageState extends State<LocationPage> {
   }
 
   Future<void> _goToOrigin() async {
-    final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(
-        const CameraPosition(
+    final GoogleMapController? controller = _googleMapController;
+    await controller!.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
             bearing: 192.8334901395799,
-            target: _origin,
+            target: origin!,
             tilt: 59.440717697143555,
-            zoom: 19.151926040649414)));
+            zoom: 14.4746)));
   }
 }
