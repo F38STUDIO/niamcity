@@ -2,198 +2,214 @@ import 'package:niamcity/models/type.dart';
 
 // Cette liste contient toutes les differentes categories d'Elementes disponibles sur l'application (clinique, maternite, etc...)
 // Lorsque vous ajoutez un nouveau type, faites attention au 'id' que vous choisisez. Il sera utilisé pour trier les 'Element'(s).
-List<Type> types = [
-  Type(
+
+List<LeType> typesSante = [
+  LeType(
     id: "001",
     nom: "clinique",
     categorie: "001",
   ),
-  Type(
+  LeType(
     id: "002",
     nom: "HYGIENE",
     categorie: "001",
   ),
-  Type(
+  LeType(
     id: "003",
     nom: "PHARMACIES",
     categorie: "001",
   ),
-  Type(
+  LeType(
     id: "004",
     nom: "HOPITAUX",
     categorie: "001",
   ),
-  Type(
+  LeType(
     id: "005",
     nom: "MERE ET ENFANT",
     categorie: "001",
   ),
-  Type(
+  LeType(
     id: "006",
     nom: "MATERNITES",
     categorie: "001",
   ),
-  Type(
+];
+
+List<LeType> typesEducation = [
+  LeType(
     id: "007",
-    nom: "ETUDES SUPERIEURES ",
+    nom: "Etudes Sup ",
     categorie: "002",
   ),
-  Type(
+  LeType(
     id: "008",
-    nom: " ECOLES PRIVES",
+    nom: " Ecoles privées",
     categorie: "002",
   ),
-  Type(
+  LeType(
     id: "009",
     nom: "ECOLES PUBLIQUES",
     categorie: "002",
   ),
-  Type(
+  LeType(
     id: "010",
-    nom: "CENTRES DE FORMATIONS",
+    nom: "Centres de formations",
     categorie: "002",
   ),
-  Type(
+  LeType(
     id: "011",
     nom: "COURS",
     categorie: "002",
   ),
-  Type(
+  LeType(
     id: "012",
     nom: "DOCUMENTS",
     categorie: "002",
   ),
-  Type(
+  LeType(
     id: "013",
     nom: "vidéos",
     categorie: "002",
   ),
-  Type(
+];
+List<LeType> typesLogement = [
+  LeType(
     id: "014",
     nom: "Maison à louer",
     categorie: "003",
   ),
-  Type(
+  LeType(
     id: "015",
     nom: "Terrains à vendre",
     categorie: "003",
   ),
-  Type(
+  LeType(
     id: "016",
     nom: "Maison à vendre",
     categorie: "003",
   ),
-  Type(
+  LeType(
     id: "017",
     nom: "Hôtels et auberges",
     categorie: "003",
   ),
-  Type(
+];
+List<LeType> typesTransport = [
+  LeType(
     id: "018",
     nom: "Achat de véhicules, motos",
     categorie: "004",
   ),
-  Type(
+  LeType(
     id: "019",
     nom: "Taxi",
     categorie: "004",
   ),
-  Type(
+  LeType(
     id: "020",
     nom: "bus",
     categorie: "004",
   ),
-  Type(
+  LeType(
     id: "021",
     nom: "Locations véhicules",
     categorie: "004",
   ),
-  Type(
+];
+List<LeType> typesCommerce = [
+  LeType(
     id: "022",
     nom: "boutiques",
     categorie: "005",
   ),
-  Type(
+  LeType(
     id: "023",
     nom: "marchés",
     categorie: "005",
   ),
-  Type(
+  LeType(
     id: "024",
     nom: "supermarché",
     categorie: "005",
   ),
-  Type(
+  LeType(
     id: "025",
     nom: "Annonces ventes",
     categorie: "005",
   ),
-  Type(
+];
+List<LeType> typesTourisme = [
+  LeType(
     id: "026",
     nom: "Sites touristiques",
     categorie: "006",
   ),
-  Type(
+  LeType(
     id: "027",
     nom: "climat",
     categorie: "006",
   ),
-  Type(
+  LeType(
     id: "028",
     nom: "traditions",
     categorie: "006",
   ),
-  Type(
+  LeType(
     id: "028",
     nom: "restaurants",
     categorie: "006",
   ),
-  Type(
+  LeType(
     id: "28",
     nom: "langues",
     categorie: "006",
   ),
-  Type(
+];
+List<LeType> typesLoisirs = [
+  LeType(
     id: "029",
     nom: "restaurant",
     categorie: "007",
   ),
-  Type(
+  LeType(
     id: "030",
     nom: "Pâtisseries boulangeries",
     categorie: "007",
   ),
-  Type(
+  LeType(
     id: "031",
     nom: "Parcs",
     categorie: "007",
   ),
-  Type(
+  LeType(
     id: "032",
     nom: "Centres de jeux",
     categorie: "007",
   ),
-  Type(
+];
+List<LeType> typesDivers = [
+  LeType(
     id: "033",
     nom: "hygiènes ",
     categorie: "008",
   ),
-  Type(
+  LeType(
     id: "034",
     nom: "Changements climatiques",
     categorie: "008",
   ),
-  Type(
+  LeType(
     id: "035",
     nom: "Jeux et concours",
     categorie: "008",
   ),
-  Type(
+  LeType(
     id: "036",
     nom: "recyclages",
     categorie: "008",
   ),
-  Type(
+  LeType(
     id: "037",
     nom: "Campagnes de sensibilisation",
     categorie: "008",
