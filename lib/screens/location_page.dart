@@ -6,6 +6,8 @@ import '../donnee_fixes/couleurs.dart';
 import '../models/categorie.dart';
 import '../models/element.dart';
 import '../models/type.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -24,6 +26,9 @@ class LocationPageState extends State<LocationPage> {
     {"satellite": MapType.satellite},
     {"terrain": MapType.terrain},
   ];
+  // Ajoutez un marqueur pour la position de l'utilisateur
+  Marker utilisateurMarker = Marker(markerId: MarkerId("utilisateur"));
+
   //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
   static List<MonElement> elementgsAffiche = [
     //une random lite des elemements à afficher comme marqueurs sur la carte
@@ -69,6 +74,51 @@ class LocationPageState extends State<LocationPage> {
       target: LatLng(37.43296265331129, -122.08832357078792),
       tilt: 59.440717697143555,
       zoom: 19.151926040649414);
+
+  ///position utiliisateur
+  @override
+  void initState() {
+    super.initState();
+    _requestLocationPermission();
+    _getUserLocation();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    final PermissionStatus status = await Permission.location.request();
+    if (status != PermissionStatus.granted) {
+      throw Exception('Location permission denied');
+    }
+  }
+
+  Future<void> _getUserLocation() async {
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      utilisateurMarker = Marker(
+        markerId: MarkerId("utilisateur"),
+        position: LatLng(position.latitude, position.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      );
+    });
+
+    // Mettez à jour la position de l'utilisateur toutes les X secondes
+    const Duration interval = Duration(seconds: 10);
+    Timer.periodic(interval, (Timer t) async {
+      var newPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      setState(() {
+        utilisateurMarker = Marker(
+          markerId: MarkerId("utilisateur"),
+          position: LatLng(newPosition.latitude, newPosition.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        );
+      });
+    });
+  }
+
+  ///position utiliisateur
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +196,7 @@ class LocationPageState extends State<LocationPage> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
-              markers: marqueurs,
+              markers: {...marqueurs, utilisateurMarker},
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(70, 0, 1, 0),
@@ -221,7 +271,12 @@ class LocationPageState extends State<LocationPage> {
   }
 
   Future<void> _goToOrigin() async {
+    CameraPosition origin = CameraPosition(
+        bearing: 192.8334901395799,
+        target: utilisateurMarker.position,
+        tilt: 59.440717697143555,
+        zoom: 19.151926040649414);
     final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_origin));
+    await controller.animateCamera(CameraUpdate.newCameraPosition(origin));
   }
 }
