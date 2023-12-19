@@ -4,8 +4,8 @@ class MonElement {
   List<String> imgs;
   String description;
   String type;
-  int latitude;
-  int longitude;
+  double latitude;
+  double longitude;
   bool certifie;
   String? prix;
   int? contact;

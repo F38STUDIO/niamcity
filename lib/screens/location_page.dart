@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../donnee_fixes/categories.dart';
 import '../donnee_fixes/couleurs.dart';
 import '../models/categorie.dart';
+import '../models/element.dart';
 import '../models/type.dart';
 
 class LocationPage extends StatefulWidget {
@@ -24,7 +25,37 @@ class LocationPageState extends State<LocationPage> {
     {"terrain": MapType.terrain},
   ];
   //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
-  //List<Element> _elementgsAffiche = [];
+  static List<MonElement> elementgsAffiche = [
+    //une random lite des elemements à afficher comme marqueurs sur la carte
+    MonElement(
+        id: "id",
+        nom: "nom1",
+        imgs: [],
+        description: "description1",
+        type: "type",
+        latitude: 37.43296265331129,
+        longitude: -122.08832357078792,
+        certifie: true),
+    MonElement(
+        id: "id",
+        nom: "nom2",
+        imgs: [],
+        description: "description2",
+        type: "type",
+        latitude: 37.43286494644912,
+        longitude: -122.08823740482332,
+        certifie: true),
+  ];
+  Set<Marker> marqueurs = {
+    Marker(
+        markerId: MarkerId("1"),
+        position: LatLng(
+            elementgsAffiche[0].latitude, elementgsAffiche[0].longitude)),
+    Marker(
+        markerId: MarkerId("2"),
+        position: LatLng(
+            elementgsAffiche[1].latitude, elementgsAffiche[1].longitude)),
+  };
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
@@ -107,7 +138,7 @@ class LocationPageState extends State<LocationPage> {
           children: [
             //
 
-            //
+            // La carte
             GoogleMap(
               zoomControlsEnabled: false,
               mapType: _mapTypeSelectionne,
@@ -115,6 +146,7 @@ class LocationPageState extends State<LocationPage> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
+              markers: marqueurs,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(70, 0, 1, 0),
