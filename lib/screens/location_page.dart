@@ -28,6 +28,7 @@ class LocationPageState extends State<LocationPage> {
   ];
   // Ajoutez un marqueur pour la position de l'utilisateur
   Marker utilisateurMarker = Marker(markerId: MarkerId("utilisateur"));
+  bool _isInitialCameraPositionSet = false;
 
   //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
   static List<MonElement> elementgsAffiche = [
@@ -102,8 +103,17 @@ class LocationPageState extends State<LocationPage> {
       );
     });
 
+    // Set initial camera position only if it hasn't been set before
+    if (!_isInitialCameraPositionSet) {
+      final GoogleMapController controller = await _controller.future;
+      await controller.animateCamera(
+        CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
+      );
+      _isInitialCameraPositionSet = true;
+    }
+
     // Mettez à jour la position de l'utilisateur toutes les X secondes
-    const Duration interval = Duration(seconds: 10);
+    const Duration interval = Duration(seconds: 3);
     Timer.periodic(interval, (Timer t) async {
       var newPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
