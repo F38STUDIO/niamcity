@@ -10,73 +10,86 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class LocationPage extends StatefulWidget {
-  const LocationPage({super.key});
+  const LocationPage({Key? key}) : super(key: key);
 
   @override
   State<LocationPage> createState() => LocationPageState();
 }
 
 class LocationPageState extends State<LocationPage> {
+  // Sélection des catégories et types par défaut
   Categorie categorieSelectionnee = categories[0];
   LeType typeSelectionne = categories[0].types[0];
+
+  // Sélection du type de carte par défaut
   MapType _mapTypeSelectionne = MapType.normal;
+
+  // Liste des types de carte disponibles
   List<Map<String, MapType>> mapTypeList = [
     {"Normale": MapType.normal},
     {"hybrid": MapType.hybrid},
     {"satellite": MapType.satellite},
     {"terrain": MapType.terrain},
   ];
-  // Ajoutez un marqueur pour la position de l'utilisateur
+
+  // Marqueur pour la position de l'utilisateur
   Marker utilisateurMarker = Marker(markerId: MarkerId("utilisateur"));
+
+  // Indique si la position de la caméra a déjà été initialisée
   bool _isInitialCameraPositionSet = false;
 
-  //cette liste est sensée contenir le resuletat de la requete <chercher tout element dont le type correspond à la variable _typeSelctionné>
-  static List<MonElement> elementgsAffiche = [
-    //une random lite des elemements à afficher comme marqueurs sur la carte
+  // Liste d'éléments à afficher comme marqueurs sur la carte
+  // Liste d'éléments à afficher comme marqueurs sur la carte
+  static List<MonElement> elementsAffiches = [
     MonElement(
-        id: "id",
-        nom: "nom1",
-        imgs: [],
-        description: "description1",
-        type: "type",
-        latitude: 37.43296265331129,
-        longitude: -122.08832357078792,
-        certifie: true),
+      id: "nom1", // Utilisez le nom comme ID
+      nom: "nom1",
+      imgs: [],
+      description: "description1",
+      type: "type",
+      latitude: 37.43296265331129,
+      longitude: -122.08832357078792,
+      certifie: true,
+    ),
     MonElement(
-        id: "id",
-        nom: "nom2",
-        imgs: [],
-        description: "description2",
-        type: "type",
-        latitude: 37.43286494644912,
-        longitude: -122.08823740482332,
-        certifie: true),
+      id: "nom2", // Utilisez le nom comme ID
+      nom: "nom2",
+      imgs: [],
+      description: "description2",
+      type: "type",
+      latitude: 37.43286494644912,
+      longitude: -122.08823740482332,
+      certifie: true,
+    ),
   ];
-  Set<Marker> marqueurs = {
-    Marker(
-        markerId: MarkerId("1"),
-        position: LatLng(
-            elementgsAffiche[0].latitude, elementgsAffiche[0].longitude)),
-    Marker(
-        markerId: MarkerId("2"),
-        position: LatLng(
-            elementgsAffiche[1].latitude, elementgsAffiche[1].longitude)),
-  };
+
+// Ensemble de marqueurs pour les éléments à afficher sur la carte
+  Set<Marker> marqueurs = Set.from(elementsAffiches.map((element) {
+    return Marker(
+      markerId: MarkerId(element.id),
+      position: LatLng(element.latitude, element.longitude),
+    );
+  }));
+
+  // Contrôleur de la carte Google
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
+  // Position initiale de la caméra
   static const CameraPosition _positionInitiale = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
 
+  // Position de la caméra sur la position initiale de l'utilisateur
   static const CameraPosition _origin = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+    bearing: 192.8334901395799,
+    target: LatLng(37.43296265331129, -122.08832357078792),
+    tilt: 59.440717697143555,
+    zoom: 19.151926040649414,
+  );
 
-  ///position utiliisateur
+  // Méthode appelée à l'initialisation de la page
   @override
   void initState() {
     super.initState();
@@ -84,6 +97,7 @@ class LocationPageState extends State<LocationPage> {
     _getUserLocation();
   }
 
+  // Méthode pour demander la permission de localisation
   Future<void> _requestLocationPermission() async {
     final PermissionStatus status = await Permission.location.request();
     if (status != PermissionStatus.granted) {
@@ -91,10 +105,13 @@ class LocationPageState extends State<LocationPage> {
     }
   }
 
+  // Méthode pour obtenir la position de l'utilisateur
   Future<void> _getUserLocation() async {
     var position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
+    // Mise à jour du marqueur de la position de l'utilisateur
     setState(() {
       utilisateurMarker = Marker(
         markerId: MarkerId("utilisateur"),
@@ -103,7 +120,7 @@ class LocationPageState extends State<LocationPage> {
       );
     });
 
-    // Set initial camera position only if it hasn't been set before
+    // Définir la position initiale de la caméra uniquement si elle n'a pas été définie auparavant
     if (!_isInitialCameraPositionSet) {
       final GoogleMapController controller = await _controller.future;
       await controller.animateCamera(
@@ -112,12 +129,14 @@ class LocationPageState extends State<LocationPage> {
       _isInitialCameraPositionSet = true;
     }
 
-    // Mettez à jour la position de l'utilisateur toutes les X secondes
-    const Duration interval = Duration(seconds: 3);
+    // Mettre à jour la position de l'utilisateur toutes les X secondes
+    const Duration interval = Duration(seconds: 8);
     Timer.periodic(interval, (Timer t) async {
       var newPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+        desiredAccuracy: LocationAccuracy.high,
+      );
 
+      // Mise à jour du marqueur de la position de l'utilisateur
       setState(() {
         utilisateurMarker = Marker(
           markerId: MarkerId("utilisateur"),
@@ -128,26 +147,36 @@ class LocationPageState extends State<LocationPage> {
     });
   }
 
-  ///position utiliisateur
+  // Méthode pour recentrer la caméra sur la position initiale de l'utilisateur
+  Future<void> _goToOrigin() async {
+    CameraPosition origin = CameraPosition(
+      bearing: 192.8334901395799,
+      target: utilisateurMarker.position,
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414,
+    );
+    final GoogleMapController controller = await _controller.future;
+    await controller.animateCamera(CameraUpdate.newCameraPosition(origin));
+  }
 
+  // Méthode pour construire l'interface utilisateur
   @override
   Widget build(BuildContext context) {
     TextStyle? dropdownStyle = const TextStyle(
-        color: Couleurs.b,
-        overflow: TextOverflow.ellipsis,
-        fontWeight: FontWeight.bold);
+      color: Couleurs.b,
+      overflow: TextOverflow.ellipsis,
+      fontWeight: FontWeight.bold,
+    );
+
     Decoration dropdownDecoration = BoxDecoration(
-        color: Couleurs.d, //background color of dropdown button
-        border: Border.all(
-            color: Colors.white, width: 1), //border of dropdown button
-        borderRadius:
-            BorderRadius.circular(30), //border raiuds of dropdown button
-        boxShadow: const <BoxShadow>[
-          //apply shadow on Dropdown button
-          BoxShadow(
-              color: Couleurs.b, //shadow for button
-              blurRadius: 5) //blur radius of shadow
-        ]);
+      color: Couleurs.d,
+      border: Border.all(color: Colors.white, width: 1),
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: const <BoxShadow>[
+        BoxShadow(color: Couleurs.b, blurRadius: 5),
+      ],
+    );
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 60),
       child: Scaffold(
@@ -165,30 +194,38 @@ class LocationPageState extends State<LocationPage> {
               ),
             ),
           ),
-          //Dropdown pour selectionner le type de map
+          //
+          // Dropdown pour sélectionner le type de carte
           actions: [
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                    color: Couleurs.a, borderRadius: BorderRadius.circular(20)),
+                  color: Couleurs.a,
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButton(
-                      borderRadius: BorderRadius.circular(30),
-                      underline: Container(),
-                      style: const TextStyle(
-                          color: Couleurs.e, fontWeight: FontWeight.bold),
-                      value: mapTypeList[0]["Normale"],
-                      items: mapTypeList
-                          .map((e) => DropdownMenuItem<MapType>(
-                              value: e.values.first, child: Text(e.keys.first)))
-                          .toList(),
-                      onChanged: (MapType? newValue) {
-                        setState(() {
-                          _mapTypeSelectionne = newValue!;
-                        });
-                      }),
+                    borderRadius: BorderRadius.circular(30),
+                    underline: Container(),
+                    style: const TextStyle(
+                      color: Couleurs.e,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    value: mapTypeList[0]["Normale"],
+                    items: mapTypeList
+                        .map((e) => DropdownMenuItem<MapType>(
+                              value: e.values.first,
+                              child: Text(e.keys.first),
+                            ))
+                        .toList(),
+                    onChanged: (MapType? newValue) {
+                      setState(() {
+                        _mapTypeSelectionne = newValue!;
+                      });
+                    },
+                  ),
                 ),
               ),
             )
@@ -196,8 +233,6 @@ class LocationPageState extends State<LocationPage> {
         ),
         body: Stack(
           children: [
-            //
-
             // La carte
             GoogleMap(
               zoomControlsEnabled: false,
@@ -215,54 +250,60 @@ class LocationPageState extends State<LocationPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  // Dropdown pour sélectionner la catégorie
                   DecoratedBox(
                     decoration: dropdownDecoration,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                       child: DropdownButton(
-                          alignment: AlignmentDirectional.center,
-                          borderRadius: BorderRadius.circular(30),
-                          underline: Container(),
-                          dropdownColor: Couleurs.d,
-                          style: dropdownStyle,
-                          value: categorieSelectionnee,
-                          items: categories
-                              .map((e) => DropdownMenuItem<Categorie>(
+                        alignment: AlignmentDirectional.center,
+                        borderRadius: BorderRadius.circular(30),
+                        underline: Container(),
+                        dropdownColor: Couleurs.d,
+                        style: dropdownStyle,
+                        value: categorieSelectionnee,
+                        items: categories
+                            .map((e) => DropdownMenuItem<Categorie>(
                                   value: e,
                                   child: Text(
                                     textAlign: TextAlign.center,
                                     e.nom,
                                     overflow: TextOverflow.ellipsis,
-                                  )))
-                              .toList(),
-                          onChanged: (Categorie? newValue) => setState(() {
-                                categorieSelectionnee = newValue!;
-                                typeSelectionne = newValue.types[0];
-                              })),
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (Categorie? newValue) => setState(() {
+                          categorieSelectionnee = newValue!;
+                          typeSelectionne = newValue.types[0];
+                        }),
+                      ),
                     ),
                   ),
+                  // Dropdown pour sélectionner le type
                   DecoratedBox(
                     decoration: dropdownDecoration,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                       child: DropdownButton(
-                          alignment: AlignmentDirectional.center,
-                          borderRadius: BorderRadius.circular(30),
-                          underline: Container(),
-                          dropdownColor: Couleurs.d,
-                          style: dropdownStyle,
-                          value: typeSelectionne,
-                          items: categorieSelectionnee.types
-                              .map((e) => DropdownMenuItem<LeType>(
+                        alignment: AlignmentDirectional.center,
+                        borderRadius: BorderRadius.circular(30),
+                        underline: Container(),
+                        dropdownColor: Couleurs.d,
+                        style: dropdownStyle,
+                        value: typeSelectionne,
+                        items: categorieSelectionnee.types
+                            .map((e) => DropdownMenuItem<LeType>(
                                   value: e,
                                   child: Text(
                                     e.nom,
                                     overflow: TextOverflow.ellipsis,
-                                  )))
-                              .toList(),
-                          onChanged: (LeType? newValue) => setState(() {
-                                typeSelectionne = newValue!;
-                              })),
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (LeType? newValue) => setState(() {
+                          typeSelectionne = newValue!;
+                        }),
+                      ),
                     ),
                   ),
                 ],
@@ -278,15 +319,5 @@ class LocationPageState extends State<LocationPage> {
         ),
       ),
     );
-  }
-
-  Future<void> _goToOrigin() async {
-    CameraPosition origin = CameraPosition(
-        bearing: 192.8334901395799,
-        target: utilisateurMarker.position,
-        tilt: 59.440717697143555,
-        zoom: 19.151926040649414);
-    final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(origin));
   }
 }
