@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:niamcity/donnee_fixes/categories.dart';
 import 'package:niamcity/donnee_fixes/couleurs.dart';
-
-import '../donnee_fixes/constantes.dart';
+import 'package:niamcity/screens/types_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -29,26 +29,35 @@ class HomePage extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  return Card(
-                    color: Couleurs.d,
-                    elevation: 4.0,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          listCategorie[index]['icon'],
-                          size: 48.0,
-                          color: Couleurs.b,
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          listCategorie[index]['name'],
-                          style: const TextStyle(
-                              color: Couleurs.a,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => TypesListPage(
+                                types: categories[index].types,
+                                categorie: categories[index].nom,
+                              )));
+                    },
+                    child: Card(
+                      color: Couleurs.d,
+                      elevation: 4.0,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            categories[index].icon,
+                            size: 48.0,
+                            color: Couleurs.b,
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            categories[index].nom,
+                            style: const TextStyle(
+                                color: Couleurs.a,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
