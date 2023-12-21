@@ -17,6 +17,9 @@ class LocationPage extends StatefulWidget {
 }
 
 class LocationPageState extends State<LocationPage> {
+  //////////////////////////////////////////////////////////////////////////////
+  Set<Polyline> polylines = {};
+
   // Sélection des catégories et types par défaut
   Categorie categorieSelectionnee = categories[0];
   LeType typeSelectionne = categories[0].types[0];
@@ -33,7 +36,9 @@ class LocationPageState extends State<LocationPage> {
   ];
 
   // Marqueur pour la position de l'utilisateur
-  Marker utilisateurMarker = Marker(markerId: MarkerId("utilisateur"));
+  Marker utilisateurMarker = const Marker(markerId: MarkerId("utilisateur"));
+  // Marquer selectionné.
+  Marker? markeurSellectionnee;
 
   // Indique si la position de la caméra a déjà été initialisée
   bool _isInitialCameraPositionSet = false;
@@ -64,12 +69,8 @@ class LocationPageState extends State<LocationPage> {
   ];
 
 // Ensemble de marqueurs pour les éléments à afficher sur la carte
-  Set<Marker> marqueurs = Set.from(elementsAffiches.map((element) {
-    return Marker(
-      markerId: MarkerId(element.id),
-      position: LatLng(element.latitude, element.longitude),
-    );
-  }));
+  // Ensemble de marqueurs pour les éléments à afficher sur la carte
+  Set<Marker> marqueurs = {};
 
   // Contrôleur de la carte Google
   final Completer<GoogleMapController> _controller =
@@ -81,28 +82,20 @@ class LocationPageState extends State<LocationPage> {
     zoom: 14.4746,
   );
 
-  // Position de la caméra sur la position initiale de l'utilisateur
-  static const CameraPosition _origin = CameraPosition(
-    bearing: 192.8334901395799,
-    target: LatLng(37.43296265331129, -122.08832357078792),
-    tilt: 59.440717697143555,
-    zoom: 19.151926040649414,
-  );
-
-  // Méthode appelée à l'initialisation de la page
-  @override
-  void initState() {
-    super.initState();
-    _requestLocationPermission();
-    _getUserLocation();
-  }
-
   // Méthode pour demander la permission de localisation
   Future<void> _requestLocationPermission() async {
     final PermissionStatus status = await Permission.location.request();
     if (status != PermissionStatus.granted) {
       throw Exception('Location permission denied');
     }
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+  void _onMarkerTapped(Marker mk) {
+    // Supprimer l'ancienne polyligne
+    setState(() {
+      markeurSellectionnee = mk;
+    });
   }
 
   // Méthode pour obtenir la position de l'utilisateur
@@ -114,7 +107,7 @@ class LocationPageState extends State<LocationPage> {
     // Mise à jour du marqueur de la position de l'utilisateur
     setState(() {
       utilisateurMarker = Marker(
-        markerId: MarkerId("utilisateur"),
+        markerId: const MarkerId("utilisateur"),
         position: LatLng(position.latitude, position.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       );
@@ -139,7 +132,7 @@ class LocationPageState extends State<LocationPage> {
       // Mise à jour du marqueur de la position de l'utilisateur
       setState(() {
         utilisateurMarker = Marker(
-          markerId: MarkerId("utilisateur"),
+          markerId: const MarkerId("utilisateur"),
           position: LatLng(newPosition.latitude, newPosition.longitude),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         );
@@ -149,6 +142,8 @@ class LocationPageState extends State<LocationPage> {
 
   // Méthode pour recentrer la caméra sur la position initiale de l'utilisateur
   Future<void> _goToOrigin() async {
+    // Afficher la polyligne entre la position de l'utilisateur et le marqueur actuel
+
     CameraPosition origin = CameraPosition(
       bearing: 192.8334901395799,
       target: utilisateurMarker.position,
@@ -157,6 +152,26 @@ class LocationPageState extends State<LocationPage> {
     );
     final GoogleMapController controller = await _controller.future;
     await controller.animateCamera(CameraUpdate.newCameraPosition(origin));
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+  // Méthode appelée à l'initialisation de la page
+  @override
+  void initState() {
+    super.initState();
+    _requestLocationPermission();
+    _getUserLocation();
+
+    // Move the initialization of marqueurs here
+    marqueurs = Set.from(elementsAffiches.map((element) {
+      return Marker(
+        markerId: MarkerId(element.id),
+        position: LatLng(element.latitude, element.longitude),
+        onTap: () => _onMarkerTapped(Marker(
+            markerId: MarkerId(element.id),
+            position: LatLng(element.latitude, element.longitude))),
+      );
+    }));
   }
 
   // Méthode pour construire l'interface utilisateur
@@ -242,6 +257,19 @@ class LocationPageState extends State<LocationPage> {
                 _controller.complete(controller);
               },
               markers: {...marqueurs, utilisateurMarker},
+              polylines: markeurSellectionnee == null
+                  ? {}
+                  : {
+                      Polyline(
+                        polylineId: const PolylineId("itineraire"),
+                        color: Colors.blue,
+                        width: 3,
+                        points: [
+                          markeurSellectionnee!.position,
+                          utilisateurMarker.position
+                        ],
+                      )
+                    },
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(70, 0, 1, 0),
