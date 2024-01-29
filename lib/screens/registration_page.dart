@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:niamcity/screens/forms/form_page.dart';
 import 'package:niamcity/screens/login_page.dart';
 
 import '../donnee_fixes/couleurs.dart';
@@ -98,6 +99,8 @@ class _RegistrationState extends State<Registration> {
                     padding: const EdgeInsets.only(
                         left: 50, right: 50, bottom: 15, top: 15)),
                 onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const Creation_page()));
                   // Vous pouvez accéder aux valeurs des champs de texte
                   // en utilisant _nameController.text, _phoneNumberController.text,
                   // et _passwordController.text.
