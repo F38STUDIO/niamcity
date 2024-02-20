@@ -1,12 +1,12 @@
 class Utilisateur {
   String id;
   String nom;
-  String address;
+  String adresse;
   int numero;
   Utilisateur({
     required this.id,
     required this.nom,
-    required this.address,
+    required this.adresse,
     required this.numero,
   });
 }

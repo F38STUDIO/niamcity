@@ -1,6 +1,6 @@
 // ici il faut mettre toutes les fonction et methodes firebase qui sont liés à l'autentification.
 // ça va permettre une meilleure authentification du code
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -11,8 +11,7 @@ class AuthService {
     String password,
   ) async {
     try {
-      final UserCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email:
             '$phoneNumber@yourdomain.com', // Firebase Auth nécessite un email, nous utilisons un format arbitraire ici
         password: password,
