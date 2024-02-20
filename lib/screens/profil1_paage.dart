@@ -12,7 +12,7 @@ class ProfilePage1 extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             InkWell(
               child: Stack(
                 children: [
@@ -28,7 +28,7 @@ class ProfilePage1 extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             itemProfile('Name', 'Team Flutter', Icons.person),
             const SizedBox(height: 10),
             itemProfile('Phone', '51829319', Icons.phone),

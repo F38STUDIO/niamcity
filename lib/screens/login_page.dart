@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:niamcity/firebase/auth.dart';
 import 'package:niamcity/screens/registration_page.dart';
 import '../donnee_fixes/couleurs.dart';
 
@@ -6,6 +7,7 @@ class LoginPage extends StatelessWidget {
   LoginPage({super.key});
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +72,10 @@ class LoginPage extends StatelessWidget {
                       padding: const EdgeInsets.only(
                           left: 50, right: 50, bottom: 15, top: 15)),
                   onPressed: () {
+                    String phoneNumber = _phoneNumberController.text;
+                    String password = _passwordController.text;
+                    _authService.signIn(phoneNumber, password);
+
                     // Vous pouvez accéder aux valeurs des champs de texte
                     // en utilisant _nameController.text, _phoneNumberController.text,
                     // et _passwordController.text.

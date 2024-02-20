@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:niamcity/screens/forms/form_page.dart';
+import 'package:niamcity/firebase/auth.dart';
 import 'package:niamcity/screens/login_page.dart';
+import 'package:niamcity/screens/profil1_paage.dart';
 
 import '../donnee_fixes/couleurs.dart';
 
@@ -34,6 +35,7 @@ class _RegistrationState extends State<Registration> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -98,13 +100,30 @@ class _RegistrationState extends State<Registration> {
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.only(
                         left: 50, right: 50, bottom: 15, top: 15)),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const Creation_page()));
-                  // Vous pouvez accéder aux valeurs des champs de texte
-                  // en utilisant _nameController.text, _phoneNumberController.text,
-                  // et _passwordController.text.
-                  // Ajoutez ici votre logique d'inscription.
+                onPressed: () async {
+                  String name = _nameController.text;
+                  String phoneNumber = _phoneNumberController.text;
+                  String password = _passwordController.text;
+                  _authService.signUp(name, phoneNumber, password);
+                  // Vous pouvez également ajouter ici la logique pour
+                  // Appel de la fonction signUp
+                  // Vérifier si tous les champs sont remplis
+                  if (name.isEmpty || phoneNumber.isEmpty || password.isEmpty) {
+                    // Afficher un message d'erreur
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Veuillez remplir tous les champs'),
+                      duration: Duration(seconds: 2),
+                    ));
+                  } else {
+                    // Appel de la fonction signUp
+                    await _authService.signUp(name, phoneNumber, password);
+
+                    // Navigation vers la page de profil ou toute autre page désirée
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) =>
+                          const ProfilePage1(), // Remplace la page actuelle par la page de profil
+                    ));
+                  }
                 },
                 child: const Text(
                   'S\'inscrire',
