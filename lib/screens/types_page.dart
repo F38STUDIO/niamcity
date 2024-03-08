@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:niamcity/donnee_fixes/couleurs.dart';
 
-import '../models/type.dart';
+import '../models/type_element.dart';
 
 class TypesListPage extends StatelessWidget {
-  final List<LeType> types;
+  final List<TypeElement> types;
   final String categorie;
 
   TypesListPage({

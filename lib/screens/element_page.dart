@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../models/type.dart';
+import '../models/type_element.dart';
 import '../models/element.dart'; // Assurez-vous d'importer le modèle d'élément
 
 class ElementsPage extends StatelessWidget {
-  final LeType selectedType;
+  final TypeElement selectedType;
 
   ElementsPage({required this.selectedType});
 

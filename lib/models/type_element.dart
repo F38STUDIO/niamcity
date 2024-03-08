@@ -1,8 +1,8 @@
-class LeType {
+class TypeElement {
   String id;
   String nom;
   String categorie;
-  LeType({
+  TypeElement({
     required this.id,
     required this.nom,
     required this.categorie,

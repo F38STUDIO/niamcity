@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 import '../../models/categorie.dart';
-import '../../models/type.dart';
+import '../../models/type_element.dart';
 
 // ignore: camel_case_types
 class Creation_page extends StatelessWidget {
@@ -48,7 +48,7 @@ class _EntrepriseState extends State<Entreprise> {
   final TextEditingController _prixController = TextEditingController();
   final TextEditingController _quantiteController = TextEditingController();
   Categorie categorieSelectionnee = categories[0];
-  LeType typeSelectionne = categories[0].types[0];
+  TypeElement typeSelectionne = categories[0].types[0];
 
   Future<void> _getImage() async {
     final pickedFile = await showDialog<PickedFile>(
@@ -206,14 +206,14 @@ class _EntrepriseState extends State<Entreprise> {
                       style: dropdownStyle,
                       value: typeSelectionne,
                       items: categorieSelectionnee.types
-                          .map((e) => DropdownMenuItem<LeType>(
+                          .map((e) => DropdownMenuItem<TypeElement>(
                               value: e,
                               child: Text(
                                 e.nom,
                                 overflow: TextOverflow.ellipsis,
                               )))
                           .toList(),
-                      onChanged: (LeType? newValue) => setState(() {
+                      onChanged: (TypeElement? newValue) => setState(() {
                             typeSelectionne = newValue!;
                           })),
                 ),

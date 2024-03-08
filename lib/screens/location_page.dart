@@ -5,7 +5,7 @@ import '../donnee_fixes/categories.dart';
 import '../donnee_fixes/couleurs.dart';
 import '../models/categorie.dart';
 import '../models/element.dart';
-import '../models/type.dart';
+import '../models/type_element.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -22,7 +22,7 @@ class LocationPageState extends State<LocationPage> {
 
   // Sélection des catégories et types par défaut
   Categorie categorieSelectionnee = categories[0];
-  LeType typeSelectionne = categories[0].types[0];
+  TypeElement typeSelectionne = categories[0].types[0];
 
   // Sélection du type de carte par défaut
   MapType _mapTypeSelectionne = MapType.normal;
@@ -320,7 +320,7 @@ class LocationPageState extends State<LocationPage> {
                         style: dropdownStyle,
                         value: typeSelectionne,
                         items: categorieSelectionnee.types
-                            .map((e) => DropdownMenuItem<LeType>(
+                            .map((e) => DropdownMenuItem<TypeElement>(
                                   value: e,
                                   child: Text(
                                     e.nom,
@@ -328,7 +328,7 @@ class LocationPageState extends State<LocationPage> {
                                   ),
                                 ))
                             .toList(),
-                        onChanged: (LeType? newValue) => setState(() {
+                        onChanged: (TypeElement? newValue) => setState(() {
                           typeSelectionne = newValue!;
                         }),
                       ),

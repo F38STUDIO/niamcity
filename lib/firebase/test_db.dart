@@ -14,7 +14,7 @@ class TestDB {
 
       // Opération READ (Find one user by uid)
       print('\nFinding user...');
-      Utilisateur? user = await utilisateurService.find();
+      Utilisateur? user = await utilisateurService.findById();
       if (user != null) {
         print('User found: ${user.nom}, ${user.adresse}, ${user.numero}');
       } else {
@@ -28,7 +28,7 @@ class TestDB {
 
       // Opération READ (Find one user by uid) après la mise à jour
       print('\nFinding user after update...');
-      user = await utilisateurService.find();
+      user = await utilisateurService.findById();
       if (user != null) {
         print('User found: ${user.nom}, ${user.adresse}, ${user.numero}');
       } else {

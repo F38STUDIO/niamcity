@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:niamcity/models/type.dart';
+import 'package:niamcity/models/type_element.dart';
 
 class Categorie {
   String id;
   String nom;
   IconData icon;
   String img;
-  List<LeType> types;
+  List<TypeElement> types;
 
   Categorie({
     required this.id,

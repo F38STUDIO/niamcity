@@ -31,18 +31,17 @@ class UtilisateurService {
             nom: doc['nom'],
             adresse: doc['adresse'],
             numero: doc['numero'],
-            // Add other properties if needed
           );
         }).toList();
       });
     } catch (e) {
       print("Error fetching users: $e");
-      throw e; // You may want to handle this error more gracefully
+      rethrow;
     }
   }
 
   // READ (Find one user by uid)
-  Future<Utilisateur?> find() async {
+  Future<Utilisateur?> findById() async {
     try {
       DocumentSnapshot doc = await ref.doc(uid).get();
       if (doc.exists) {
@@ -51,14 +50,13 @@ class UtilisateurService {
           nom: doc['nom'],
           adresse: doc['adresse'],
           numero: doc['numero'],
-          // Add other properties if needed
         );
       } else {
         return null;
       }
     } catch (e) {
       print("Error finding user: $e");
-      throw e; // You may want to handle this error more gracefully
+      rethrow;
     }
   }
 
